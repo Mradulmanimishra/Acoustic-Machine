@@ -1,0 +1,37 @@
+# AcousticGuard — Default Configuration
+# =========================================
+# All training, data, and deployment parameters live here.
+# Override any value via CLI: python src/train.py --config configs/default.yaml --epochs 30
+
+# ── Data ──────────────────────────────────────────────────────────────────────
+data_root: "."                    # Root directory containing meta/ and spectrograms/
+normal_classes:                   # Classes considered NORMAL (train-only)
+  - "engine"
+  - "vacuum_cleaner"
+  - "washing_machine"
+
+# ── Preprocessing ─────────────────────────────────────────────────────────────
+target_sr: 16000                  # Resample all audio to 16 kHz
+duration_sec: 5.0                 # Pad/crop clips to exactly 5 seconds
+n_mels: 64                        # Mel frequency bands
+
+# ── Model ─────────────────────────────────────────────────────────────────────
+base_channels: 16                 # Channel count at first conv layer (16 → 32 → 64)
+latent_channels: 64               # Bottleneck depth
+dropout_rate: 0.10                # Bottleneck dropout (regularisation)
+
+# ── Training ──────────────────────────────────────────────────────────────────
+epochs: 20
+batch_size: 16
+learning_rate: 0.001
+weight_decay: 0.00001             # L2 regularisation
+patience: 5                       # Early-stopping: stop after N epochs without improvement
+
+# ── Output ────────────────────────────────────────────────────────────────────
+checkpoint_dir: "checkpoints"
+save_name: "best_model.pth"
+
+# ── Inference ─────────────────────────────────────────────────────────────────
+# Threshold meaning: MSE below this → NORMAL; above → WARNING/ANOMALY.
+# Set by observing the 95th percentile of reconstruction errors on normal validation data.
+anomaly_threshold: 0.035
